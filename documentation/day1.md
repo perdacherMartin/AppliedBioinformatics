@@ -1,5 +1,3 @@
-Report to Applied Bioinformatics
-========================
 
 ## 3. Sequence retrieval and ortholog prediction
 
