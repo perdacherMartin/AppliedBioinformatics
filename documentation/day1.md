@@ -1,9 +1,9 @@
 Report to Applied Bioinformatics
 ========================
 
-## Sequence retrieval and ortholog prediction
+## 3. Sequence retrieval and ortholog prediction
 
-### Acquisition and pre-processing of high throughput sequencing data
+### 3.1. Acquisition and pre-processing of high throughput sequencing data
 
 1. Go to the website of the short read archive (SRA) at the NCBI.
 
@@ -28,6 +28,8 @@ Report to Applied Bioinformatics
 
 
 2. Choose the largest sequencing project and perform all the steps to obtain the related sequence data in fastq format. List the steps but do not actually perform the download. 
+
+		To retrieve the sequnce in fastq format, goto the search page and search for the experiment accession number. All the reads for the experiment will be listed, and on the right side of the page, you can choose the download format for the selected read. The accession number for the larger project is: SRX092193
 
 	a. What is the average insert length for this library?
 
@@ -100,7 +102,7 @@ Report to Applied Bioinformatics
 		
 	b. Is it read 1 or read 2 of a read pair?
 	
-		It is read number 2.
+		 This read belongs to flowcell-lane: 3, tile 1, with the coordinates (x: 14740, y: 1669)
 		
 	c. Consult the internet and find out about the interpretation of Phred quality scores. In which publication have these quality values been described first?
 
@@ -108,7 +110,7 @@ Report to Applied Bioinformatics
 		
 	d. What is the quality value (Phred-Value) of its 3d base?
 	
-		The quality of the thrid base is an "H". The "H" has the decimal ASCII value of 72. The Phred-Value is 39 (72-33).
+		The quality of the thrid base is an "H". The "H" has the decimal ASCII value of 72. The Phred-Value is 39 (72-33). Q = -10 log10(P). The original probability P, that this base is wrong is: 0.000125893 or 0.0125893 %
 
 6. 	Produce a data summary using the program fastqc.
 
@@ -235,12 +237,140 @@ Report to Applied Bioinformatics
 
 	a. How many sequences are in the resulting file?
 	
+		kurs25@avery:~/data/day1/trinity/trinity> cat Trinity.fasta | grep "^>" | wc -l
+		63022
+		
+		There are 63.022 sequences in the file. 
+	
 	b. Compute a summary of your fasta file!
 	
-15. Identify the 2000 longest contigs in your assembly. 
+		kurs25@avery:~/data/day1/trinity/trinity> perl count_fasta.pl Trinity.fasta 
+		200:299         25758
+		300:399         12982
+		400:499         7126
+		500:599         4282
+		600:699         2967
+		700:799         2059
+		800:899         1511
+		900:999         1201
+		1000:1099       941
+		1100:1199       726
+		1200:1299       634
+		1300:1399       468
+		1400:1499       426
+		1500:1599       337
+		1600:1699       260
+		1700:1799       219
+		1800:1899       189
+		1900:1999       141
+		2000:2099       121
+		2100:2199       103
+		2200:2299       87
+		2300:2399       66
+		2400:2499       51
+		2500:2599       48
+		2600:2699       42
+		2700:2799       31
+		2800:2899       39
+		2900:2999       27
+		3000:3099       22
+		3100:3199       35
+		3200:3299       17
+		3300:3399       13
+		3400:3499       12
+		3500:3599       8
+		3600:3699       13
+		3700:3799       7
+		3800:3899       8
+		3900:3999       5
+		4000:4099       5
+		4100:4199       2
+		4200:4299       4
+		4300:4399       0
+		4400:4499       3
+		4500:4599       0
+		4600:4699       1
+		4700:4799       3
+		4800:4899       1
+		4900:4999       3
+		5000:5099       4
+		5100:5199       6
+		5200:5299       1
+		5300:5399       1
+		5400:5499       0
+		5500:5599       1
+		5600:5699       0
+		5700:5799       0
+		5800:5899       0
+		5900:5999       1
+		6000:6099       0
+		6100:6199       0
+		6200:6299       0
+		6300:6399       1
+		6400:6499       0
+		6500:6599       0
+		6600:6699       0
+		6700:6799       0
+		6800:6899       0
+		6900:6999       0
+		7000:7099       0
+		7100:7199       1
+		7200:7299       0
+		7300:7399       0
+		7400:7499       0
+		7500:7599       0
+		7600:7699       0
+		7700:7799       0
+		7800:7899       1
+		7900:7999       1
+
+		Total length of sequence:       30087732 bp
+		Total number of sequences:      63022
+		N25 stats:                      25% of total sequence length is contained in the 4726 sequences >= 1038 bp
+		N50 stats:                      50% of total sequence length is contained in the 15023 sequences >= 545 bp
+		N75 stats:                      75% of total sequence length is contained in the 33341 sequences >= 322 bp
+		Total GC count:                 11696181 bp
+		GC %:                           38.87 %
+	
+15. Identify the 1000 longest contigs in your assembly. 
 
 	a. Extract them from the contig file and store them in a separate file for further analysis. Name this file *octopus_vulgaris.contig.max2k.fa*.
 	
-	b. What length range do these 2000 sequences cover?
+		#!/usr/bin/python 
 	
+		import sys 
+		import re 
 	
+		file = sys.argv[1] 
+		ofile = sys.argv[2] 
+	
+		fobj = open(file, "r") 
+		seqsl = {} 
+		lastkey = None 
+		print "Counting ..."
+		for line in fobj : 
+			strl = list(line) 
+			if strl[0] == ">" : 
+				m = re.search("len\=(\w+) ",line) 
+				seqlen = m.group(1) 
+				lastkey = float(seqlen) 
+				while lastkey in seqsl: 
+					lastkey = lastkey + 0.001 
+				print str(lastkey) + ",", 
+				seqsl[lastkey] = [] 
+			seqsl[lastkey].append(line) 
+		fobj.seek(0) 
+		print "Sorting ..." 
+		sortseqsl = sorted(seqsl.keys(), reverse=True) 
+		print "Output ..." 
+		outfile = open(ofile, "w") 
+		for i in range(0,1000) : 
+			print str(sortseqsl[i]) +  ",", 
+			rows = seqsl[sortseqsl[i]] 
+			for row in rows : 
+				outfile.write(row) 
+		print "END"
+	
+	b. What length range do these 1000 sequences cover?
+	
+		1864 - 7945

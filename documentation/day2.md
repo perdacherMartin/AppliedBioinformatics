@@ -1,3 +1,7 @@
+## 4. Basic Annotation and Ortholog Prediction
+
+### Basic sequence analysis: Similarity search
+
 1. Take the longest contig from your Octopus vulgaris assembly and use the BlastX tool at [http://blast.ncbi.nlm.nih.gov/blast.cgi](http://blast.ncbi.nlm.nih.gov/blast.cgi) to identify the best matching protein in the non-redundant protein database.
 	a. Summarize your findings (name, function of the protein, species, length of the hit, etc.
 
@@ -180,19 +184,64 @@
 
 6. Search in your 1000 Octopus contigs for orthologs to proteins conserved in the Lophotrochozoa. Install/Copy the HaMStR package into your home directory. You can retrieve the package from the course repository. Use the HaMStR package, lophotrochozoa hmmer3 as the core-ortholog set, and Lottia gigantea (lotgi 2713) as reference species. 
 
-	a. How many orthologous groups were identied?
-		
-	b. How many Octopus sequences are identied as ortholog? 
-	
+	a. How many orthologous groups were identified?
+			$> ls [0-9]*.fa | wc -l
+			109
+
+	b. How many Octopus sequences are identied as orthologs.
+
+			$> grep "|comp" [0-9]*.fa | wc -l
+			193
+
 	c. Explain the difference in number between (a) and (b).
-	
+		
+			Thorugh later duplication event, more octopus sequences can be an ortholog to one ortholog group
+
 	d. Extract the Octopus sequences from the orthologous groups and store for later use. 
-	
-	e. How many dierent species does the larges group of orthologs contain?
-	
+		
+			grep -h -A 1 "|comp" [0-9]*.fa | sed '/^--$/d' > ../octopus_orthologs.fa
+
+	e+f.
+
+		#!/bin/bash
+
+		max_spec=0
+		max_spec_file=""
+		max_oct=0
+		max_oct_file=""
+    
+		for f in $(ls [0-9]*.fa)
+		do
+			count=$(grep ">" $f | wc -l)
+			octo_count=$(grep "|comp" $f | wc -l)
+			# maximum species
+			if [ "$count" -gt "$max_spec" ] 
+			then
+				max_spec=$count
+				max_spec_file=$f
+			fi
+			# maximum sequecences
+			if [ "$octo_count" -gt "$max_oct" ]
+			then
+				max_oct=$octo_count
+				max_oct_file=$f
+			fi
+			
+		done
+    
+		echo "Maximum species: "$max_spec_file" # "$max_spec
+		echo "Maximum octopus sequences: "$max_oct_file" # "$max_oct
+    
+		$>./count_species.sh
+    
+		Maximum species: 111923.fa # 17
+		Maximum octopus sequences: 111923.fa # 10
+
+	e. How many different species does the larges group of orthologs contain?
+		
+			In the file 111923 we find 8 different species.
+
 	f. Which group is the one that contains the most Octopus sequences?
-
-
-
-
+		
+			The group with the most ortholog Octopus sequences is in the fasta-file with the name: 111923.fa. This file contains 10 ortholog sequences.
  
