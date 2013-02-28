@@ -64,9 +64,14 @@ This exercise is to learn how to deal with RNA-Seq data and how to get some rele
 
 1. Convert the two SAM files (one for mapped Illumina reads and other one for 454 reads) into sorted BAM files and index them.
 
-		samtools view -b -S Illumina.sam > Illumina.bam
-		samtools sort Illumina.bam Illumina.bam.sorted
-		samtools index Illumina.bam.sorted.bam Illumina.indexed
+		Converting to bam format:
+			samtools view -b -S Illumina.sam > Illumina.bam
+
+		Sorting the file:
+			samtools sort Illumina.bam Illumina.bam.sorted
+			
+		Indexing the file:
+			samtools index Illumina.bam.sorted.bam Illumina.indexed
 		
 2. Filter your data for proper pairs and mapping quality (Q) 20. What does Q20 mean?
 
@@ -79,30 +84,45 @@ This exercise is to learn how to deal with RNA-Seq data and how to get some rele
 		samtools sort Illumina.bam Illumina.bam.sorted
 		
 4. Pileup your mapped data and compute the per-base coverage. Which is the highest per-base coverage for each of the data set.
-
+		
+		At first, we create a pileup:
+		samtools mpileup Illumina.sorted.q20.bam > Illumina.pileup
+		
 		#!/usr/bin/python
-
 		import sys
 		import re
-		
 		file = sys.argv[1]
 		seq = {}
 		fobj = open(file, "r")
 		for line in fobj :
-		m = re.search("\A(\w*)\s*(\d*)\s*\w*\s*(\d*)", line)
-		sequence = m.group(1)
-		pos = m.group(2)
-		coverage = m.group(3)
-		max = 0
-		if sequence in seq :
-			max = int(seq[sequence][0])
-		else :
-			seq[sequence] = [coverage, pos]
-		if coverage > max :
-			seq[sequence][0] = coverage
-			seq[sequence][1] = pos
+			m = re.search("\A(\w*)\s*(\d*)\s*\w*\s*(\d*)", line)
+			sequence = m.group(1)
+			pos = m.group(2)
+			coverage = m.group(3)
+			max = 0
+			if sequence in seq :
+				max = int(seq[sequence][0])
+			else :
+				seq[sequence] = [coverage, pos]
+			if coverage > max :
+				seq[sequence][0] = coverage
+				seq[sequence][1] = pos
 		for sequence in seq.keys() :
-		print sequence + ":" + seq[sequence][0] + " # " + seq[sequence][1]
+			print sequence + ":" + seq[sequence][0] + " # " + seq[sequence][1]
+
+		Just the last 10 lines from the result:
+
+			comp125811_c0_seq1:1 # 617
+			comp64800_c0_seq1:7 # 307
+			comp5821_c0_seq1:3 # 1016
+			comp147225_c0_seq1:6 # 234
+			comp127778_c0_seq1:2 # 270
+			comp197120_c0_seq1:2 # 290
+			comp64948_c0_seq1:5 # 283
+			comp8969_c0_seq1:6 # 489
+			comp550_c0_seq1:7 # 490
+			comp111991_c0_seq1:1 # 234
+
 
 5. Merge the two mapped read files and assign readgroups to each of the read data set
 
@@ -402,7 +422,7 @@ I have used blastx, to find similar proteins in the translated database. Most of
 	libSize <- apply(counts, MARGIN = 2, sum)
 
 
-### 14. Discussion
+### Discussion
 
 There are 2 different read counts, one for the 454 reads and one for the illumina reads. The library size of the 454 reads is really small in comparison to the library size of the illumina reads. There is no really differential expression, which is obvious by eye. For computing a differential expression methods like edgeR, DESeq or bayseq (within R) could be used. 
 

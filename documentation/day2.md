@@ -92,7 +92,7 @@ To support our guess, we have used an alignment with mafft to see which regions 
 		
 	c. Obtain the protein sequence from the start to (just before) the stop codon?
 	
-		The stop codon is not in the contig. We have checked the starting (ethionine) and stoping positions in the sequence with expasy translate tool (http://web.expasy.org/cgi-bin/translate/dna_aa). Consider the white region to be the 5' UTR. The red region is the coding region. 
+		The stop codon is not in the contig. We have checked the starting (Methionine) and stoping positions in the sequence with expasy translate tool (http://web.expasy.org/cgi-bin/translate/dna_aa). Consider the white region to be the 5' UTR. The red region is the coding region. 
 	![Expasy](figuresDay2/expasy.png)
 		
 		Considering the following image (of the blastx result), it is not for sure that the starting position of the expasy query is correct, because most of the matches we find have a region (~ 300 aminos) before our contig starts. 

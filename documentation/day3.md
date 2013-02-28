@@ -260,32 +260,32 @@ The aim of this exercise is to get the phylogenetic relationships of the ortholo
 	a. with sequences from InParanoid. (There is no need to use all orthologs but make sure that you maintain the diversity within the taxon set).
 
 		Expanding the cluster by:
-			Anopheles gambiae	AGAP004852-PA
-			Drosophila ananassae	FBpp0115800
-			Brugia malayi	XP_001902377.1
-			+ Mus musculus	ENSMUSP00000109979
-			Acyrthosiphon pisum	XP_001948434.1
-			* Homo Sapiens	ENSP00000264758
-			Bos taurus	ENSBTAP00000011966
-			* Gallus gallus ENSGALP00000013902
-			* Danio rerio ENSDARP00000093507		
+			Anopheles gambiae	AGAP004852-PA							gi|158293044
+			Drosophila ananassae	FBpp0115800							gi|194753162
+			Brugia malayi	XP_001902377.1								tr|A8QG43
+			+ Mus musculus	ENSMUSP00000109979						tr|Q8BJT2
+			Acyrthosiphon pisum	XP_001948434.1						gi|193615505
+			\* Homo Sapiens	ENSP00000264758						gi|29826321
+			Bos taurus	ENSBTAP00000011966							gi|149642577
+			\* Danio rerio ENSDARP00000093507							gi|121582316	
 		
 	
 	b. with sequences from orthoMCL. Which orthoMCL cluster do you identify and how many species and sequences are represented? Again, there is no need to use all orthologs, make a reasonable selection of 10 to 15 species/sequences that should cover the full phylogenetic range in the ortholog set
 	
 		Cluster OG5_127052 with 149 sequences from 83 species.
-			Drosophila melanogaster	dmel|FBpp0085732 
-			Emericella nidulans	anid|AN5007 
-			Equus caballus	ecab|XP_001497126 
-			* Gallus gallus	ggal|ENSGALP00000013902 
-			* Homo sapiens	hsap|ENSP00000264758 
-			Macaca mulatta	mmul|XP_002799318 
-			+ Mus musculus	 	mmus|ENSMUSP00000032069 
-			Schistosoma mansoni	sman|Smp_083040.2 
-			Takifugu rubripes	trub|ENSTRUP00000027790 
-			* Danio rerio	drer|ENSDARP00000093507
-			* also used from inparaniod
-			+ ortholog used from inparanoid	
+		Drosophila melanogaster										dmel|FBpp0085732 										
+		Emericella nidulans											anid|AN5007 												
+		Equus caballus	ecab|XP_001497126 						ecab|XP_001497126
+		Gallus gallus													ggal|ENSGALP00000013902
+		\* Homo sapiens								 				hsap|ENSP00000264758
+		Macaca mulatta													mmul|XP_002799318
+		+ Mus musculus	 	 											mmus|ENSMUSP00000032069
+		Schistosoma mansoni											sman|Smp_083040.2
+		Takifugu rubripes												trub|ENSTRUP00000027790 									
+		\* Danio rerio													drer|ENSDARP00000093507					
+		
+		\* also used from inparaniod
+		+ ortholog used from inparanoid
 	
 	c. What do you learn about the likely function of your gene?
 	
@@ -315,14 +315,14 @@ The aim of this exercise is to get the phylogenetic relationships of the ortholo
 
 	a. Infer the consensus tree from the 100 bootstrap replicates and draw it with figtree.
 	
-		figtree export to nexus
+		First we used figtree to export the 100 bootstrap trees to the nexus format. Next we used paup to compute the strict consensus tree:
 		paup contree all/strict=yes treefile=inpara_strict_consensus
 	
 		Inparanoid strict consensus tree:
-	  ![InParanoid strict Consensus tree](figuresDay3/inpara_strict_consensus.png)
+![InParanoid strict Consensus tree](figuresDay3/inpara_strict_consensus.png)
 
 		OrthoMcl strict consensus tree:
-		![OrthoMcl strict Consensus tree](figuresDay3/orthomcl_strict_consensus.png)
+![OrthoMcl strict Consensus tree](figuresDay3/orthomcl_strict_consensus.png)
 		
 	b. Locate the likely root of the tree.
 	

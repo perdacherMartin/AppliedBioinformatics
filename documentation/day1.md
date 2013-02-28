@@ -103,12 +103,16 @@ There are some tools for the initional quality analysis and tweaking of the data
 		HHHHHHHHHHHHH?HEGGGGHHHHFHHHHHGHBHHBG@@EHBHHHFHHHHHHHGH3DGDB<DAD>CEEHEBAFDCFDEHEBBBBAEEEEABEB+B65:0>@@@B@AAABA@=9=B88872@0=@#####################
 
 	a. What flowcell coordinates does it have?
-	
-		This read belongs to flowcell number three.
+		
+		There is no standard way to provide this information, but it is obvious that this read belongs to flowcell number three.
+		flowcell-lane: 3
+		tile number: 1
+		x: 14740:
+		y: 1669
 		
 	b. Is it read 1 or read 2 of a read pair?
 	
-		 This read belongs to flowcell-lane: 3, tile 1, with the coordinates (x: 14740, y: 1669)
+		 This is read 2.
 		
 	c. Consult the internet and find out about the interpretation of Phred quality scores. In which publication have these quality values been described first?
 
