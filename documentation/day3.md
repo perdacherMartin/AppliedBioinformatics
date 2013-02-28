@@ -316,6 +316,9 @@ The aim of this exercise is to get the phylogenetic relationships of the ortholo
 	a. Infer the consensus tree from the 100 bootstrap replicates and draw it with figtree.
 	
 		First we used figtree to export the 100 bootstrap trees to the nexus format. Next we used paup to compute the strict consensus tree:
+		
+		Starting paup: `paup inpara.nexus`
+		            In paup: `contree all/strict=yes treefile=inpara_strict_consensus`
 		paup contree all/strict=yes treefile=inpara_strict_consensus
 	
 		Inparanoid strict consensus tree:

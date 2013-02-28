@@ -347,7 +347,7 @@ There are some tools for the initional quality analysis and tweaking of the data
 	
 15. Identify the 1000 longest contigs in your assembly. 
 
-	a. Extract them from the contig file and store them in a separate file for further analysis. Name this file *octopus_vulgaris.contig.max2k.fa*.
+	a. Extract them from the contig file and store them in a separate file for further analysis. Name this file *octopus_vulgaris.contig.max2k.fa*.
 	
 		We use the following phyton script to sort the contigs by length. At next we took only the first 1000 entries. 
 	
