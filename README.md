@@ -22,8 +22,11 @@ This is an elaboration to the lecture "Applied Bioinformatics" at the University
 [Link to Question and Answer](documentation/day3_Hmm.md)
 
 
-# 7. RNA-Seq and SNP calling
+# 7.1. RNA-Seq
 
 [Link to Question and Answer](documentation/day4_explore.md)
 
+# 7.2. SNP-calling
+
+[Link to Question and Answer](documentation/day4_snp.md)
 

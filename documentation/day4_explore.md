@@ -1,3 +1,113 @@
+# 7 RNA-Seq and SNP calling
+
+## 7.1. Map your RNA-Seq data to your reference genome
+
+## Introduction
+
+This exercise is to learn how to deal with RNA-Seq data and how to get some relevant biological information. At first we need to map our data to a reference genome. As a reference we use the transcriptome assembled by Trinity. We filterd our reads based on the quality and counted them with _htseq_ and its default parameters. A brief expression analysis with the FPKM value was calculated to extract highly expressed genes. 
+
+## 7.1.1. Obtain your data
+	
+1. Explore the file using the command less. If you try to open it with gedit, kwrite or another text editor your computer may hang up due to the size of the file
+
+		We just looked at the fastq file with head:
+	
+		$> head Illumina_paired.fq
+		@SRR331946.1/1 ILLUMINA-FCBE01_0027_FC:3:1:1549:1145/1 length=145
+		TAGGATNGAAGGTGAGGGATCGTTTTTCAACTCACAAGGATTCTTTGCCAAAAGAAAAGGAATTGTTTCTCGACCAATAC
+		+SRR331946.1/1 ILLUMINA-FCBE01_0027_FC:3:1:1549:1145/1 length=145
+		DDDD<?(D>DA=:?ADDDD,DB<DDDDB<DDDD2DDDDD28DDB>7*BB@DB3<7;;**1<<><<1;*87.57:>BD:DB
+		@SRR331946.1/2 ILLUMINA-FCBE01_0027_FC:3:1:1549:1145/2 length=145
+		CAGCCTTGAAACCAAGATTTTCCCCAATTCTTTCCAAAATTCCACCCAAGATCACAGGA
+		+SRR331946.1/2 ILLUMINA-FCBE01_0027_FC:3:1:1549:1145/2 length=145
+		A>>:*5?AAA@@AAA0AA5A>>*<<6><+(A9<<A::A</:*/A7<2<:A<*(>*A*<A
+		
+		$> head new_reads.fq
+		@SRR108980.1 FB0Y0UD04DU6LO length=271
+		TCAGGTGATGACTGGCGGTTTGTCTTATTCCAGCATGAGCAATAAGATTTATAGCGACATGGGGATGGATTGGATGAACCAAGAACAGACCACAGGGACGTACAATTAGTCTGCAGTTGTAATTTAAATTAGGTTGGGTGGTAGGTCATCGGGCGTGATTCTAAGAATACAACCAAGCAGGAGGTTTTAACTAATTGTCAAATACGAGTAACGTAGATAAGTTAGTACGAAAGAATAGTACTGATTACTATTACTTATTGTCGCNCTGTGN
+		+SRR108980.1 FB0Y0UD04DU6LO length=271
+		AAA===AAAAAAAAAAB?===AAFAABBBFFFFFFFFIIIIIIIIFFBBAAAB>==@??A???999=AAAA???@BAA===<==AA?@=>>==?<<<22.2:=66660000.................//444333332113............,434........24......224.....22.......*.-----66---*6---6;6---0--3882220,,,,,,,,,**,,2,,,,,,,22,,,,,,,,,,,,10,,,!,1,,,!
+		@SRR108980.2 FB0Y0UD04DT4G9 length=241
+		TCAGGTTCCTAACGGTAAGCTGGATATTTGGGGAAATGGTCTTTGTCCCGGGCAGATGCAACGTTCTCCTTACGCTGCCTCATACGCTGAAGAGATGAATCCAGTTAAACAAACCCTACGTCTCCAATGTCACTGGAACGATCTGTTTTGGGTTGGTTGTCTGTTAAAGAATGGTATCATACTTGCCGCCTGATACTCTTGGTCGTCCTACTGGTAGGCTGAGCGGGCGTGGCGAAGGCGN
+		+SRR108980.2 FB0Y0UD04DT4G9 length=241
+		AABB@???>894244377====>?=<333????:::?>A??332?7444<<<499???@@@?AA?????AAB?A???AAAA??????===?AAAAAAAAAA@@@@@@@72...116.,,.399;;...11643444;74...43.......333662.0006977....++44434346668....43...4433----------668------33----22,,,,,,,5522,,,2,,,!
+		
+2. What kind of sequencing technology is this?
+	
+		We have illumina and 454 reads. 
+	
+3. Are those paired end reads?
+
+		The illumina-reads are paired end. The 454 data is single end. 
+		
+4. How many reads are in each of the files?
+	
+		The following command `grep -c "@" Illumina_paired.fq` shows, that there are 29154685 reads in the illumina file.
+		And `grep -c "@" new_reads.fq` gives us 14673 reads for the 454 file.
+	
+5. What other file formats do you know to store NGS reads? Name at least 3 different formats.
+		
+		* GenBank FLATFILES
+		* PHYLIP
+		* MSF
+		* NEXUS
+		
+## 7.1.2. Map your data
+
+1. Run NextGenMap using: submit2sge q compute 'ngm -r Ref.fasta -q READFILE.fq -o output.sam' for both data sets. When you run ngm with the Illumina data, add the parameter -p to inform the program that this is paired-end data.
+		
+2. What does NextGenMap do? NextGenMap maps the reads against a reference genome and aligns them.
+
+		NextGenMap maps the reads against a reference genome and aligns them. 
+		
+## 7.1.3. Filter your data
+
+1. Convert the two SAM files (one for mapped Illumina reads and other one for 454 reads) into sorted BAM files and index them.
+
+		samtools view -b -S Illumina.sam > Illumina.bam
+		samtools sort Illumina.bam Illumina.bam.sorted
+		samtools index Illumina.bam.sorted.bam Illumina.indexed
+		
+2. Filter your data for proper pairs and mapping quality (Q) 20. What does Q20 mean?
+
+		samtools view -q 20 -f 0x0002 -b Illumina.bam.sorted.bam -o Illumina.sorted.q20
+		
+		Q = -10 log10(P). The original probability P, that this base is wrong is: 0.01 %
+
+3. Sort your data using SAMtools.
+
+		samtools sort Illumina.bam Illumina.bam.sorted
+		
+4. Pileup your mapped data and compute the per-base coverage. Which is the highest per-base coverage for each of the data set.
+
+		#!/usr/bin/python
+
+		import sys
+		import re
+		
+		file = sys.argv[1]
+		seq = {}
+		fobj = open(file, "r")
+		for line in fobj :
+		m = re.search("\A(\w*)\s*(\d*)\s*\w*\s*(\d*)", line)
+		sequence = m.group(1)
+		pos = m.group(2)
+		coverage = m.group(3)
+		max = 0
+		if sequence in seq :
+			max = int(seq[sequence][0])
+		else :
+			seq[sequence] = [coverage, pos]
+		if coverage > max :
+			seq[sequence][0] = coverage
+			seq[sequence][1] = pos
+		for sequence in seq.keys() :
+		print sequence + ":" + seq[sequence][0] + " # " + seq[sequence][1]
+
+5. Merge the two mapped read files and assign readgroups to each of the read data set
+
+		samtools merge -r -f merge.bam Illumina.sorted.q20.bam new_reads.sorted.q20.bam
+		
 ## 7.1.4. Explore your data
 
 1. How many reads mapped on the plus and on the minus strand? Use samtools view.
@@ -81,30 +191,20 @@
 ## 7.1.6 Import data to R
 
 
-
 ### 1. Importing the data into Rstudio:
-
-
 
 	counts_454 = read.csv2("htseq.new_reads.formated.couts", header = FALSE, sep = "\t")
 	counts_ill = read.csv2("htseq.formated.couts", header = FALSE, sep = "\t")
 	gff = read.csv2("Ovulgaris.gff", header = FALSE, sep = "\t")
 
-
-
 ### 2. Merging the data:
-
 
 	gff_ill = merge(counts_ill, gff, by = "V1")
 	colnames(gff_ill) = c("V1", "counts.Ill", "Annotation", "attribute", "start", "end", "score", "strand", "frame", "gene_ID")
 	merged_data = merge(counts_454, gff_ill, by = "V1")
 	colnames(merged_data)[2] = "counts.454"
 
-
-
 ### 3. Explore your data:
-
-
 
 	names(merged_data)
 
@@ -132,19 +232,13 @@
 
 ### 4. Calculate library sizes and FPKM:
 
-
-
 		merged_data$length = (merged_data$end - merged_data$start)
 		library_size = sum(merged_data$counts.Ill)
 		merged_data$FPKM = (1e+10 * merged_data$counts.Ill/merged_data$length)/library_size
 
-
-
 ### 5. Explore your data:
 
 	names(merged_data)
-
-
 
 	##  [1] "V1"         "counts.454" "counts.Ill" "Annotation" "attribute" 
 	##  [6] "start"      "end"        "score"      "strand"     "frame"     
@@ -152,8 +246,6 @@
 
 
 	head(merged_data)
-
-
 
 	##                  V1 counts.454 counts.Ill Annotation attribute start  end
 	## 1 comp10012_c0_seq1          0       4896    Ensembl      exon   100 1844
@@ -169,7 +261,6 @@
 	## 4    42      +     . gene_id=comp10041_c0_seq1   2501  1597.1
 	## 5    42      +     . gene_id=comp10047_c0_seq1   2077  1319.9
 	## 6    42      +     . gene_id=comp10047_c0_seq2   2059   347.7
-
 
 
 ### 6. How is FPKM calculated in detail?
@@ -282,8 +373,6 @@ I have used blastx, to find similar proteins in the translated database. Most of
 
 ### 13. Let us compare the two data sets. Check what genes are expressed acording to the 454 data:
 
-
-
 	merged_data[merged_data$counts.454 > 0, ]
 
 	##                    V1 counts.454 counts.Ill Annotation attribute start
@@ -313,8 +402,10 @@ I have used blastx, to find similar proteins in the translated database. Most of
 	libSize <- apply(counts, MARGIN = 2, sum)
 
 
-### 14. What do you see?
+### 14. Discussion
 
 There are 2 different read counts, one for the 454 reads and one for the illumina reads. The library size of the 454 reads is really small in comparison to the library size of the illumina reads. There is no really differential expression, which is obvious by eye. For computing a differential expression methods like edgeR, DESeq or bayseq (within R) could be used. 
 
 In both cases there is a high expression in the 3rd sequence with the label comp10955\_c0\_seq3. 
+
+

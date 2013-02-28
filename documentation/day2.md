@@ -1,5 +1,11 @@
 ## 4. Basic Annotation and Ortholog Prediction
 
+## Introduction
+
+We want to know more about our sequences. In the previous step we aligned some sequences into contigs with trinity. The sequences in our experiment originate from exons. The contigs might be similar to sequences on a protein level. In the first step we use BlastX to get a guess about our sequences. Are there similar sequences in different species? Does our findings have commonalities in the function, so we might infer the same function to our protein. But after all, we have to emphasise that it is just a guess and not a proof. 
+
+To support our guess, we have used an alignment with mafft to see which regions are common and which are different. Blast works good for well conserved regions, if your protein could not be found you can use a Hidden Markov Model (HMM) search to compare your findings with known HMM models. HaMSTR is a HMM search tool to screen Expressed sequence tags (EST) in a pre-defined set of genes (our 1000-contig file). HaMStR uses the Inparanoid-Database to extract the knowledge about the ortholog-relationship.
+
 ### Basic sequence analysis: Similarity search
 
 1. Take the longest contig from your Octopus vulgaris assembly and use the BlastX tool at [http://blast.ncbi.nlm.nih.gov/blast.cgi](http://blast.ncbi.nlm.nih.gov/blast.cgi) to identify the best matching protein in the non-redundant protein database.
@@ -25,7 +31,7 @@
 	
 	c. What are your conclusions concerning the characterization of your query sequence? Do the Blast results follow your expectation?
 	
-		There are many homologues sequences of the same protein in the result as we would have expect. 
+		There are many homologues sequences of this protein in the result as we would have expect. Most of our findings are related to the receptor protein 44F. This is an indication, that our protein might have the same function.
 	
 	d. Retrieve the protein sequence of the highest scoring Blast.
 	
@@ -78,7 +84,7 @@
 
 	a. Which reading frame of the mRNA is coding the protein sequnence?
 	
-		We have used the ORF-finder at: [http://www.bioinformatics.org/sms2/orf_find.html](http://www.bioinformatics.org/sms2/orf_find.html) to try out some of the possible reading frames. Finnaly we used reading frame three at the reverse strand. 
+		We have used the ORF-finder at: http://www.bioinformatics.org/sms2/orf_find.html to try out some of the possible reading frames. Finnaly we used reading frame three at the reverse strand. 
 		
 	b. How long are the UTRs?
 		
@@ -100,15 +106,17 @@
 		
 		clustalw align_merge.fq 
 		
-		The command from does a multiple alignment with the sequences in the align_merge.fq file. The output is a aln file, which gives you the output of the alignment (see in c.) and a dnd-file which contains information for phylognetic recontruction of these sequences.
+		The command from above, does a multiple sequence alignment with the sequences in the align_merge.fq file. The output is a aln file, which gives you the output of the alignment (see in c.) and a dnd-file which contains information for phylognetic recontruction of these sequences.
 		
 		
 	b. Align the two sequences with maft. Since the default output format of maft is fasta, use the option -clustalout to obtain the alignment in clustal format).
 	
 		mafft --clustalout align_merge.fq > align_merge_mafft.out
 	
-	c. Compare the two alignments quickly by eye. What differences are prominent (within the rst couple of hundred amino acids) and what conclusions concerning the use of alignment tools do you draw from these dierences?
-	
+	c. Compare the two alignments quickly by eye. What differences are prominent (within the first couple of hundred amino acids) and what conclusions concerning the use of alignment tools do you draw from these dierences?
+
+			Both alignments look very similar. I could not find a difference in the comparison of these two alignments. Following output shows the first four lines of the two alignments. 
+			
 			CLUSTAL W (1.83) multiple sequence alignment
 		
 			longest_contig_blast           MLILLTGYVFGGDVLRLFHGHMDECLAIPEAGSENEFSAVMYETGAVCSH
@@ -125,27 +133,31 @@
 		
 			longest_contig_blast           WLSYQTTEVKKKGVGKVEEKKAVMLVEGHMDDGFTFSRAQEEESRSARVI
 			longest_contig_translated      WLSYMTYETKKRGVGRVEEKKAVLLLEGHMDDAFTLSRAQEEESRSARVI
-		                                   **** * *.**:***:*******:*:******.**:**************
+			                               **** * *.**:***:*******:*:******.**:**************
 		
 
 
 			CLUSTAL format alignment by MAFFT FFT-NS-1 (v6.935b)
 					
-			blasted_longest MLILLTGYVFGGDVLRLFHGHMDECLAIPEAGSENEFSAVMYETGAVCSHARSLWRIEII
-			translated_long ------------------------------------------------------------
+			blasted_longest                MLILLTGYVFGGDVLRLFHGHMDECLAIPEAGSENEFSAVMYETGAVCSH
+			translated_long                --------------------------------------------------
 			
 			
-			blasted_longest KTKWSGAFIQWGQQCRLRHVTSGRYLGVTHDKQVITVHRNKAAEKAVTFYLLQTKDEKKQ
-			translated_long ------------------HITSGRYLSIHSDNQVVTVHRNRATEELTTFLLLMTKDEKKQ
-			                                  *:******.:  *:**:*****:*:*: .** ** *******
+			blasted_longest                ARSLWRIEIIKTKWSGAFIQWGQQCRLRHVTSGRYLGVTHDKQVITVHRN
+			translated_long                ----------------------------HITSGRYLSIHSDNQVVTVHRN
+                                                                 *:******.:  *:**:*****
+
+			blasted_longest                KAAEKAVTFYLLQTKDEKKQLETSEEEGMGKSDIKYGDTIVFIQHSDTGL
+			translated_long                RATEELTTFLLLMTKDEKKQSEGREDEGMGKADIKYGDSMTFIQHCASGL
+			                               :*:*: .** ** ******* *  *:*****:******::.****. :**
+
 			
-			blasted_longest LETSEEEGMGKSDIKYGDTIVFIQHSDTGLWLSYQTTEVKKKGVGKVEEKKAVMLVEGHM
-			translated_long SEGREDEGMGKADIKYGDSMTFIQHCASGLWLSYMTYETKKRGVGRVEEKKAVLLLEGHM
-			                 *  *:*****:******::.****. :****** * *.**:***:*******:*:****
+			blasted_longest                WLSYQTTEVKKKGVGKVEEKKAVMLVEGHMDDGFTFSRAQEEESRSARVI 
+			translated_long                WLSYMTYETKKRGVGRVEEKKAVLLLEGHMDDAFTLSRAQEEESRSARVI 
+			                               **** * *.**:***:*******:*:******.**:**************
 			
-			blasted_longest DDGFTFSRAQEEESRSARVIRKCQSIFHRFNNVLDTLKTEGRTGIAWSRITLSEVLKCLE
-			translated_long DDAFTLSRAQEEESRSARVIRKCQSLFHRFNKALDSLKTEGRTSHAWSRITLEEVLKSLE
-			                **.**:*******************:*****:.**:*******. *******.****.**
+
+
 	
 5. Run a local BlastX search to compare your 1000 contigs to the sequences in the database contaminationDb a /project/kurs-home/share/applBioinf12/blast_db. Submit the BLAST job via the SGE and use 4 processors. Use the program blastall -p blastx and the options -e 0.0001 -v 25 -b 25 for the BlastX search.
 
@@ -179,27 +191,28 @@
 		|8552|BGIBMGA013297| [Bombyx mori]                                   2334   0.0  
 		|10531|LOAG_00665T0| [Loa loa]                                       2135   0.0  
 		
-		Blastx translates the dna-sequences into protein-sequences and finds the closest related species on a protein level. These are the closest related speceis.
+		Blastx translates the dna-sequences into protein-sequences and finds an ortholog sequence in a closesly related species on a protein level. We found orthologs of this protein in the sea snail (Lottia gigantea), worm (Capitella capitata), the honey bee (Apis mellifera) or the pea aphid (Acrythosiphon pisum) and several fly related species. 
 
 
 6. Search in your 1000 Octopus contigs for orthologs to proteins conserved in the Lophotrochozoa. Install/Copy the HaMStR package into your home directory. You can retrieve the package from the course repository. Use the HaMStR package, lophotrochozoa hmmer3 as the core-ortholog set, and Lottia gigantea (lotgi 2713) as reference species. 
 
 	a. How many orthologous groups were identified?
-			$> ls [0-9]*.fa | wc -l
-			109
+		
+		$> ls [0-9]*.fa | wc -l
+		109
 
 	b. How many Octopus sequences are identied as orthologs.
 
-			$> grep "|comp" [0-9]*.fa | wc -l
-			193
+		$> grep "|comp" [0-9]*.fa | wc -l
+		193
 
 	c. Explain the difference in number between (a) and (b).
 		
-			Thorugh later duplication event, more octopus sequences can be an ortholog to one ortholog group
+		Thorugh later duplication event, more octopus sequences can be an ortholog to one ortholog group
 
 	d. Extract the Octopus sequences from the orthologous groups and store for later use. 
 		
-			grep -h -A 1 "|comp" [0-9]*.fa | sed '/^--$/d' > ../octopus_orthologs.fa
+		grep -h -A 1 "|comp" [0-9]*.fa | sed '/^--$/d' > ../octopus_orthologs.fa
 
 	e+f.
 
@@ -243,5 +256,8 @@
 
 	f. Which group is the one that contains the most Octopus sequences?
 		
-			The group with the most ortholog Octopus sequences is in the fasta-file with the name: 111923.fa. This file contains 10 ortholog sequences.
- 
+			The group with the most ortholog Octopus sequences is in the fasta-file with the name: 111923.fa. This file contains 10 ortholog sequences.			
+			
+## Discussion
+
+We used BlastX and the longest contig from our Octopus vulgaris assembly to search for orthologs to get a feeling of the function of this protein. Most of our findings in this search are related to the receptor 44F, which is in general related to the calcium channel. A closer look at the reading frame and our blast result revealed that our contig sequence is in both ends incomplete. We used BlastX to search for ortholog sequences and to reveal the relationship to other known species. The BlastX output shows that the closest related specie is a sea snail Lottia gigantea. In the following we used HaMStR and Lottia gigantea as a reference to look for ortholog proteins.

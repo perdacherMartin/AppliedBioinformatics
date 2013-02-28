@@ -1,5 +1,9 @@
 ## 6. Domain search and functional characterization of proteins
 
+## Introduction
+
+To get to know, which domains are in our proteins, we could use hmmer to identify conserved domains or predict transmembrane domains. In our case we want to check an existing HMM (hidden markov model) of an elongation factor with our ortholog proteins. The purpose of this task is to get to know the Hmmer package. Hmmer has two different applications. You can use _hmmbuild_ and _hmmpress_ from a multiple sequence alignment, to build a domain database. Another application to Hmmer is the command _hmmscan_. Run _hmmscan_ for a uncharacterized protein against a profile-HMM (pHMM) database to figure out the similarity to the stored models and with it the most likely characterization. 
+
 1. Use the Octopus vulgaris orthologs that HaMStR identified to perform a domain annotation.
 	a. Download the pHMM for the Elongation factor Tu GTP binding domain from the pfam webpage [http://pfam.sanger.ac.uk](http://pfam.sanger.ac.uk).
 	
@@ -17,7 +21,7 @@
 		
 		hmmscan3 --tblout hmm.tsv hmm_database/hmm orthologs/octopus_orthologs.fa >hmmscan.out
 		
-		There are four entries in the generated tsv-file. These proteins might be generated with high certainty by the downloaded markov model.
+		There are four entries in the generated tsv-file. These proteins might be generated with high certainty by the downloaded markov model. This means that our sequence contains an Elongation factor Tu GTP domain. 
 		
 	c. Extract one of the Octopus sequences that contain the GTP domain and paste it into the Pfam webpage in order to get a full Pfam annotation
 		
@@ -34,7 +38,7 @@
 	
 	e. Compare the online and your local result.
 		
-		There are more entries in the database. Besides the GTP domain site, there were some other protein-domains with lower E-value detected. 
+		There are more entries in the local result. Besides the GTP domain site, there were some other protein-domains with lower E-value detected. 
 		
 		#                                                                                             --- full sequence ---- --- best 1 domain ---- --- domain number estimation ----
 		# target name        accession  query name                                         accession    E-value  score  bias   E-value  score  bias   exp reg clu  ov env dom rep inc description of target
@@ -90,3 +94,6 @@
 	
 		My queried sequence contains three domains. This three domains are likely to occure together in one peptide and all three domains are found within the queried amino sequence, so I assume that it is the GTP-binding elongation family, which are elongation factors.
 		
+## Discussion
+
+We figured out, that four of our Octopus sequences do contain the GTP domain. We selected one of those sequences to annotate it with the Pfam database. The Pfam database is a large collection of protein families, each represented by HMMs and multiple sequence alignments. All three domains of the Elongation factor are found in our sequence. The high E-value of our result tells us, that it is very likely that this is sequence is responsible for the elongation. 
